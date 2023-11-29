@@ -28,6 +28,7 @@ fn main() {
     let mut ribbon: u32 = 0;
     for d in dim {
         ribbon += d.pos1l * d.pos2w * d.pos3h;
+        ribbon += smaller_sides(d.pos1l, d.pos2w, d.pos3h);
         let pos1l = 2 * d.pos1l * d.pos2w;
         let pos2w = 2 * d.pos2w * d.pos3h;
         let pos3h = 2 * d.pos3h * d.pos1l;
@@ -38,5 +39,7 @@ fn main() {
     println!("The total ribbon meters needed are {}", ribbon);
 }
 fn smaller_sides(a: u32, b: u32, c: u32) -> u32 {
-    unimplemented!()
+    let mut arr = [a, b, c];
+    arr.sort();
+    arr[0] + arr[0] + arr[1] + arr[1]
 }
