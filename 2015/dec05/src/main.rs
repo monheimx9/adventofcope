@@ -21,12 +21,12 @@ fn main() {
 
 fn is_this_string_nice(s: &str) -> SantaString {
     match unauthoriszed_strings(s) {
-        SantaString::IsNaughty => return SantaString::IsNaughty,
+        SantaString::IsNaughty => SantaString::IsNaughty,
         SantaString::IsNice => match twice_in_a_row(s) {
-            SantaString::IsNaughty => return SantaString::IsNaughty,
+            SantaString::IsNaughty => SantaString::IsNaughty,
             SantaString::IsNice => match vowel(s) {
-                SantaString::IsNaughty => return SantaString::IsNaughty,
-                SantaString::IsNice => return SantaString::IsNice,
+                SantaString::IsNaughty => SantaString::IsNaughty,
+                SantaString::IsNice => SantaString::IsNice,
             },
         },
     }
