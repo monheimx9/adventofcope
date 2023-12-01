@@ -58,12 +58,9 @@ fn get_double_digit_with_index(s: &str) -> u32 {
         }
     }
 
-    match word_collection.first_key_value() {
-        Some((i, w)) => {
-            first_word_index = Some(i.clone());
-            first_word = Some(w)
-        }
-        None => {}
+    if let Some((i, w)) = word_collection.first_key_value() {
+        first_word_index = Some(*i);
+        first_word = Some(w);
     }
 
     let mut word_collection: BTreeMap<u32, &str> = BTreeMap::new();
@@ -73,12 +70,10 @@ fn get_double_digit_with_index(s: &str) -> u32 {
             word_collection.insert(w as u32, word);
         }
     }
-    match word_collection.last_key_value() {
-        Some((i, w)) => {
-            second_word_index = Some(i.clone());
-            second_word = Some(w)
-        }
-        None => {}
+
+    if let Some((i, w)) = word_collection.last_key_value() {
+        second_word_index = Some(*i);
+        second_word = Some(w);
     }
 
     let mut first: u32 = 0;
