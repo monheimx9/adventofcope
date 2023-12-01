@@ -17,6 +17,27 @@ fn main() {
         }
     }
     println!("Total nice strings {count}");
+
+    count = the_second_impact(&strings);
+
+    println!("The true total is {count}");
+}
+
+fn the_second_impact(ss: &[&str]) -> i32 {
+    let mut count = 0;
+    count
+}
+
+fn is_it_really_nice(s: &str) -> SantaString {
+    unimplemented!()
+}
+
+fn double_pair(s: &str) -> SantaString {
+    unimplemented!()
+}
+
+fn repeat_between(s: &str) -> SantaString {
+    unimplemented!()
 }
 
 fn is_this_string_nice(s: &str) -> SantaString {
