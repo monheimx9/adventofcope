@@ -82,7 +82,7 @@ fn get_double_digit_with_index(s: &str) -> u32 {
     match first_word {
         Some(w) => {
             if first_word_index.unwrap() < first_digit_index as u32 {
-                first = transform_word_to_digit(w).unwrap();
+                first = transform_word_to_digit(w, &digits_word).unwrap();
             } else {
                 first = first_digit.to_digit(10).unwrap();
             }
@@ -92,7 +92,7 @@ fn get_double_digit_with_index(s: &str) -> u32 {
     match second_word {
         Some(w) => {
             if second_word_index.unwrap() > second_digit_index as u32 {
-                second = transform_word_to_digit(w).unwrap();
+                second = transform_word_to_digit(w, &digits_word).unwrap();
             } else {
                 second = second_digit.to_digit(10).unwrap();
             }
@@ -105,15 +105,11 @@ fn get_double_digit_with_index(s: &str) -> u32 {
     result
 }
 
-fn transform_word_to_digit(s: &str) -> Option<u32> {
-    let digits_word = [
-        "zero", "one", "two", "three", "four", "five", "six", "seven", "eight", "nine",
-    ];
-
+fn transform_word_to_digit(s: &str, digits_word: &[&str]) -> Option<u32> {
     let mut result: Option<u32> = None;
 
     for (i, d) in digits_word.iter().enumerate() {
-        if d == &s {
+        if *d == s {
             result = Some(i as u32);
         }
     }
