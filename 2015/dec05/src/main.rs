@@ -12,7 +12,7 @@ fn main() {
     let strings: Vec<&str> = input.lines().collect();
     for s in strings.iter() {
         match is_this_string_nice(s) {
-            SantaString::IsNaughty => count += 0,
+            SantaString::IsNaughty => {}
             SantaString::IsNice => count += 1,
         }
     }
@@ -25,19 +25,62 @@ fn main() {
 
 fn the_second_impact(ss: &[&str]) -> i32 {
     let mut count = 0;
+    for s in ss.iter() {
+        match is_it_really_nice(s) {
+            SantaString::IsNice => count += 1,
+            SantaString::IsNaughty => {}
+        }
+    }
     count
 }
 
 fn is_it_really_nice(s: &str) -> SantaString {
-    unimplemented!()
+    match double_pair(s) {
+        SantaString::IsNaughty => SantaString::IsNaughty,
+        SantaString::IsNice => match repeat_between(s) {
+            SantaString::IsNaughty => SantaString::IsNaughty,
+            SantaString::IsNice => SantaString::IsNice,
+        },
+    }
 }
 
 fn double_pair(s: &str) -> SantaString {
-    unimplemented!()
+    let mut first_char: char = '_';
+    for (i, c) in s.chars().enumerate() {
+        if let Some(a) = s.rfind(format!("{}{}", first_char, c).as_str()) {
+            if a > (i) {
+                println!(
+                    "Nice pair: {} = {}",
+                    s,
+                    format!("{}{}", first_char, c).as_str()
+                );
+                return SantaString::IsNice;
+            }
+        }
+        first_char = c;
+    }
+
+    SantaString::IsNaughty
 }
 
 fn repeat_between(s: &str) -> SantaString {
-    unimplemented!()
+    let vecc: Vec<char> = s.chars().collect();
+    for (i, c) in vecc.iter().enumerate() {
+        let between = vecc[i + 1];
+        let next = vecc[i + 2];
+        if *c == next && *c != between {
+            println!(
+                "Nice repeat: {} = {}",
+                s,
+                format!("{}{}{}", c, between, next)
+            );
+            return SantaString::IsNice;
+        }
+        if i == vecc.len() - 3 {
+            return SantaString::IsNaughty;
+        }
+    }
+    SantaString::IsNaughty
 }
 
 fn is_this_string_nice(s: &str) -> SantaString {
@@ -126,5 +169,35 @@ mod tests {
             is_this_string_nice("dvszwmarrgswjxmb"),
             SantaString::IsNaughty
         ));
+    }
+    #[test]
+    fn part_two1() {
+        let inp = is_it_really_nice("qjhvhtzxzqqjkmpb");
+        assert!(matches!(inp, SantaString::IsNice))
+    }
+    #[test]
+    fn part_two2() {
+        let inp = is_it_really_nice("xxyxx");
+        assert!(matches!(inp, SantaString::IsNice))
+    }
+    #[test]
+    fn part_two3() {
+        let inp = is_it_really_nice("uurcxstgmygtbstg");
+        assert!(matches!(inp, SantaString::IsNaughty))
+    }
+    #[test]
+    fn part_two4() {
+        let inp = is_it_really_nice("ieodomkazucvgmuy");
+        assert!(matches!(inp, SantaString::IsNaughty))
+    }
+    #[test]
+    fn part_two5() {
+        let inp = is_it_really_nice("vxlbxagsmsuuchod");
+        assert!(matches!(inp, SantaString::IsNaughty))
+    }
+    #[test]
+    fn part_two6() {
+        let inp = is_it_really_nice("xxxddetvrlpzsfpq");
+        assert!(matches!(inp, SantaString::IsNaughty))
     }
 }
