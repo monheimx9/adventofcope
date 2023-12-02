@@ -61,6 +61,23 @@ impl SantaGame {
         }
         true
     }
+    fn power_of_minimum_required(&self) -> u32 {
+        let mut min_red: u32 = 0;
+        let mut min_green: u32 = 0;
+        let mut min_blue: u32 = 0;
+        for cube in &self.1 {
+            if min_red < cube.red {
+                min_red = cube.red;
+            }
+            if min_green < cube.green {
+                min_green = cube.green;
+            }
+            if min_blue < cube.blue {
+                min_blue = cube.blue;
+            }
+        }
+        min_red * min_green * min_blue
+    }
 }
 
 fn parse_digits(s: &str) -> u32 {
@@ -78,12 +95,15 @@ fn main() {
         .lines()
         .map(SantaGame::from_str)
         .collect();
-    let total_part_one = input
+    let total_part_one: u32 = input
         .iter()
         .filter(|f| f.is_game_possible(12, 13, 14))
         .map(|j| j.0)
-        .sum::<u32>();
+        .sum();
     println!("Cumulated games id's from part one is {total_part_one}");
+
+    let total_part_two: u32 = input.iter().map(|f| f.power_of_minimum_required()).sum();
+    println!("Cumulated power of min required cubes is {total_part_two}");
 }
 
 //Game 1: 3 blue, 4 red; 1 red, 2 green, 6 blue; 2 green
@@ -134,6 +154,24 @@ mod tests {
                 .map(|f| f.0)
                 .sum::<u32>(),
             8
+        )
+    }
+    #[test]
+    fn part_two() {
+        let input = [
+            "Game 1: 3 blue, 4 red; 1 red, 2 green, 6 blue; 2 green",
+            "Game 2: 1 blue, 2 green; 3 green, 4 blue, 1 red; 1 green, 1 blue",
+            "Game 3: 8 green, 6 blue, 20 red; 5 blue, 4 red, 13 green; 5 green, 1 red",
+            "Game 4: 1 green, 3 red, 6 blue; 3 green, 6 red; 3 green, 15 blue, 14 red",
+            "Game 5: 6 red, 1 blue, 3 green; 2 blue, 1 red, 2 green",
+        ];
+        let santa_games: Vec<SantaGame> = input.into_iter().map(SantaGame::from_str).collect();
+        assert_eq!(
+            santa_games
+                .iter()
+                .map(|f| f.power_of_minimum_required())
+                .sum::<u32>(),
+            2286
         )
     }
 }
