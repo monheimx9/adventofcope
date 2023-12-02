@@ -12,13 +12,13 @@ impl SantaCube {
         for cube in cubes {
             match cube {
                 x if x.contains("red") => {
-                    r = SantaCube::find_color(x, "red");
+                    r = parse_digits(x);
                 }
                 x if x.contains("green") => {
-                    g = SantaCube::find_color(x, "green");
+                    g = parse_digits(x);
                 }
                 x if x.contains("blue") => {
-                    b = SantaCube::find_color(x, "blue");
+                    b = parse_digits(x);
                 }
                 _ => {}
             }
@@ -27,13 +27,6 @@ impl SantaCube {
             red: r,
             green: g,
             blue: b,
-        }
-    }
-    fn find_color(s: &str, color: &str) -> u32 {
-        if s.contains(color) {
-            parse_digits(s)
-        } else {
-            0
         }
     }
 }
