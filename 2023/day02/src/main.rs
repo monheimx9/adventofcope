@@ -6,6 +6,7 @@ struct SantaCube {
 }
 
 impl SantaCube {
+    //7 red, 6 blue, 5 green
     fn from_str(s: &str) -> SantaCube {
         let cubes: Vec<&str> = s.split(',').collect();
         let (mut r, mut g, mut b) = (0, 0, 0);
