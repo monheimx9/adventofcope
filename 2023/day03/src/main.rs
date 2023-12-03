@@ -6,42 +6,45 @@ struct Gears {
 
 impl Gears {
     fn from_vecstr(vec: &[&str]) -> Vec<Gears> {
-        let mut gears: Vec<Gears> = Vec::new();
-        for (yl, l) in vec.iter().enumerate() {
-            for (xc, c) in l.chars().enumerate() {
-                if c == '*' {
-                    gears.push(Gears {
-                        x: xc as i32,
-                        y: yl as i32,
-                    })
-                }
-            }
-        }
-        gears
+        vec.iter()
+            .enumerate()
+            .flat_map(|(yl, line)| {
+                line.chars().enumerate().filter_map(move |(xc, c)| {
+                    if c == '*' {
+                        Some(Gears {
+                            x: xc as i32,
+                            y: yl as i32,
+                        })
+                    } else {
+                        None
+                    }
+                })
+            })
+            .collect()
     }
 }
 struct PartNumber<'a> {
     x: i32,
     y: i32,
-    lenght: u8,
+    length: u8,
     value: &'a str,
 }
 
 impl<'a> PartNumber<'a> {
     fn from_vecstr(vec: &[&'a str]) -> Vec<PartNumber<'a>> {
-        let mut new_vec: Vec<PartNumber<'a>> = Vec::new();
-        for (i, s) in vec.iter().enumerate() {
-            let nums = extract_num_from_str(s);
-            for num in nums {
-                new_vec.push(PartNumber {
-                    x: num.1,
-                    y: i as i32,
-                    lenght: (num.0.len() as u8),
-                    value: num.0,
-                });
-            }
-        }
-        new_vec
+        vec.iter()
+            .enumerate()
+            .flat_map(|(i, s)| {
+                extract_num_from_str(s)
+                    .into_iter()
+                    .map(move |num| PartNumber {
+                        x: num.1,
+                        y: i as i32,
+                        length: num.0.len() as u8,
+                        value: num.0,
+                    })
+            })
+            .collect()
     }
     fn int(&self) -> u32 {
         self.value.parse().unwrap()
@@ -54,31 +57,31 @@ struct ValidPart<'b> {
 
 impl<'b> ValidPart<'b> {
     fn from_entire_schema(p: &PartNumber<'b>, sch: &[&str]) -> Option<ValidPart<'b>> {
-        let skip_index = {
-            if p.y > 0 {
-                p.y - 1
-            } else {
-                0
+        let start_y = if p.y > 0 { p.y - 1 } else { 0 };
+
+        for (y, line) in sch.iter().enumerate().skip(start_y as usize) {
+            if y as i32 > p.y + 1 {
+                return None;
             }
-        };
-        for (il, l) in sch.iter().enumerate().skip(skip_index as usize) {
-            for (ic, c) in l.chars().enumerate() {
-                if !c.is_ascii_digit() && c != '.' {
-                    if il as i32 >= (p.y - 1) && (il as i32 <= p.y + 1) {
-                        if ic as i32 >= (p.x - 1) && ((ic as i32) <= (p.x + (p.lenght as i32))) {
-                            return Some(ValidPart {
-                                part: PartNumber {
-                                    x: p.x,
-                                    y: p.y,
-                                    lenght: p.lenght,
-                                    value: p.value,
-                                },
-                            });
-                        }
-                    }
+
+            for (x, c) in line.chars().enumerate() {
+                if c.is_ascii_digit() || c == '.' {
+                    continue;
                 }
-                if il as i32 > (p.y + 1) {
-                    return None;
+
+                if y as i32 >= p.y - 1
+                    && y as i32 <= p.y + 1
+                    && x as i32 >= p.x - 1
+                    && x as i32 <= p.x + (p.length as i32)
+                {
+                    return Some(ValidPart {
+                        part: PartNumber {
+                            x: p.x,
+                            y: p.y,
+                            length: p.length,
+                            value: p.value,
+                        },
+                    });
                 }
             }
         }
@@ -107,22 +110,27 @@ impl<'c> Schema<'c> {
         let parts = &self.0;
         let mut count: u32 = 0;
 
-        'outer: for g in gears {
-            let mut valid: Vec<u32> = Vec::new();
-            for p in parts {
-                let py = p.part.y;
-                let px = p.part.x;
-                let pl = p.part.lenght as i32;
-                let pv = p.part.int();
-                if py >= (g.y - 1) && py <= (g.y + 1) {
-                    if px >= (g.x - pl) && px <= (g.x + 1) {
-                        valid.push(pv);
-                        if valid.len() == 2 {
-                            count += valid[0] * valid[1];
-                            continue 'outer;
-                        }
+        'outer: for gear in gears {
+            let valid_parts: Vec<u32> = parts
+                .iter()
+                .filter_map(|part| {
+                    let py = part.part.y;
+                    let px = part.part.x;
+                    let pl = part.part.length as i32;
+                    let pv = part.part.int();
+
+                    if py >= gear.y - 1 && py <= gear.y + 1 && px >= gear.x - pl && px <= gear.x + 1
+                    {
+                        Some(pv)
+                    } else {
+                        None
                     }
-                }
+                })
+                .collect();
+
+            if valid_parts.len() >= 2 {
+                count += valid_parts[0] * valid_parts[1];
+                continue 'outer;
             }
         }
         count
