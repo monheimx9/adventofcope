@@ -23,13 +23,19 @@ fn main() {
     let mut gr: Grid<bool> = Grid::new(1000, 1000);
     let txt: Vec<&str> = include_str!("../input.txt").lines().collect();
     let instruction = get_instructions(&txt);
-    for i in instruction {
+    for i in &instruction {
         push_button(&mut gr, &i.l, &i.a)
     }
 
     let count = gr.iter().filter(|&f| *f).count();
+    println!("Total lights on for part one is {count}");
 
-    println!("Total lights on {count}")
+    let mut gr: Grid<i32> = Grid::new(1000, 1000);
+    for i in instruction {
+        vario(&mut gr, &i.l, &i.a);
+    }
+    let count: i32 = gr.iter().sum();
+    println!("Total brightness for part two is {count}")
 }
 
 fn get_instructions(vec: &[&str]) -> Vec<Instruction> {
@@ -67,6 +73,19 @@ fn push_button(g: &mut Grid<bool>, l: &Light, a: &Area) {
                 Light::On => *m = true,
                 Light::Off => *m = false,
                 Light::Toggle => *m ^= true,
+            }
+        }
+    }
+}
+
+fn vario(g: &mut Grid<i32>, l: &Light, a: &Area) {
+    for n in a.x1..=a.x2 {
+        for o in a.y1..=a.y2 {
+            let m = g.get_mut(o as usize, n as usize).unwrap();
+            match l {
+                Light::On => *m += 1,
+                Light::Off => *m += if *m > 0 { -1 } else { 0 },
+                Light::Toggle => *m += 2,
             }
         }
     }
