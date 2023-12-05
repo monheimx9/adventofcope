@@ -31,8 +31,8 @@ impl Seed {
                 src = *n;
             } else {
                 r = *n;
+                seeds.push(Seed { src, dst: src, r });
             }
-            seeds.push(Seed { src, dst: src, r })
         }
         seeds
     }
