@@ -63,8 +63,6 @@ fn main() {
                 let idx: u32 = n as u32 + o;
                 if idx as usize <= cards.len() {
                     if let Some(card) = cards.get_mut(&idx) {
-                        // Update the copies based on matches and iterations
-                        // Increment the copies of the target card
                         card.copies += 1;
                     }
                 }
@@ -113,8 +111,6 @@ mod tests {
                     let idx: u32 = n as u32 + o;
                     if idx as usize <= cards.len() {
                         if let Some(card) = cards.get_mut(&idx) {
-                            // Update the copies based on matches and iterations
-                            // Increment the copies of the target card
                             card.copies += 1;
                         }
                     }
