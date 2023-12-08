@@ -104,23 +104,34 @@ impl Network {
             .filter(|c| c.0.ends_with('A'))
             .map(|h| h.0.to_string())
             .collect::<Vec<String>>();
-        let mut is_all_zzz = false;
-        let mut end_nodes: Vec<&str> = Vec::new();
+        let mut end_nodes = start_vec.clone();
 
-        while is_all_zzz {}
-
-        for start in start_vec {
-            let mut new_start = start.clone();
-            for (i, n) in ins.iter().cycle().enumerate() {
-                count += 1;
-                let next = self.0.get(&new_start).unwrap();
-                new_start = next.get(n).unwrap();
-                if new_start.trim().ends_with('Z') {
-                    println!("Start: {start} | End: {new_start} | Steps at {i}");
+        while true {
+            count += 1;
+            for dir in ins.iter().cycle() {
+                for mut node in &end_nodes {
+                    count += 1;
+                    let next = self.0.get(node).unwrap().clone();
+                    node = &next.get(dir).unwrap();
+                }
+                if end_nodes.iter().all(|f| f.ends_with('Z')) {
                     break;
                 }
             }
         }
+
+        // for start in start_vec {
+        //     let mut new_start = start.clone();
+        //     for (i, n) in ins.iter().cycle().enumerate() {
+        //         count += 1;
+        //         let next = self.0.get(&new_start).unwrap();
+        //         new_start = next.get(n).unwrap();
+        //         if new_start.trim().ends_with('Z') {
+        //             println!("Start: {start} | End: {new_start} | Steps at {i}");
+        //             break;
+        //         }
+        //     }
+        // }
         count
     }
 }
