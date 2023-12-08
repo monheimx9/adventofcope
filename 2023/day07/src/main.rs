@@ -64,11 +64,7 @@ impl Hand {
             .into_iter()
             .max_by_key(|&(_, count)| count)
             .map(|(c, _)| c);
-
-        let maxfreqcard = match maxfreqcard {
-            Some(c) => c,
-            None => 'W',
-        };
+        let maxfreqcard = maxfreqcard.unwrap_or('W');
 
         let counts: Vec<u32> = s
             .chars()
@@ -136,7 +132,7 @@ fn process_part_one(hh: &str) -> usize {
         .sum()
 }
 fn process_part_two(hh: &str) -> usize {
-    let handset = HandSet::from_str(hh.replace("J", "W").as_str());
+    let handset = HandSet::from_str(hh.replace('J', "W").as_str());
     handset
         .hands
         .iter()
