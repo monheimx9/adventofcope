@@ -34,7 +34,8 @@ impl Card {
             '4' => Card::Four,
             '3' => Card::Three,
             '2' => Card::Two,
-            _ => Card::One,
+            'W' => Card::One,
+            _ => panic!("Invalid char in hand"),
         }
     }
 }
@@ -51,27 +52,53 @@ enum Hand {
 }
 impl Hand {
     fn from_str(s: &str) -> Self {
-        let mut h: HashMap<char, u8> = HashMap::new();
-        for c in s.chars() {
-            let n = h.entry(c).or_insert(0);
-            *n += 1;
-        }
+        let maxfreqcard = s
+            .chars()
+            .fold(HashMap::new(), |mut acc, c| {
+                if c != 'W' {
+                    *acc.entry(c).or_insert(0) += 1;
+                }
+
+                acc
+            })
+            .into_iter()
+            .max_by_key(|&(_, count)| count)
+            .map(|(c, _)| c);
+
+        let maxfreqcard = match maxfreqcard {
+            Some(c) => c,
+            None => 'W',
+        };
+
+        let counts: Vec<u32> = s
+            .chars()
+            .fold(HashMap::new(), |mut acc, c| {
+                match c == 'W' {
+                    true => *acc.entry(maxfreqcard).or_insert(0) += 1,
+                    false => *acc.entry(c).or_insert(0) += 1,
+                };
+
+                acc
+            })
+            .iter()
+            .map(|(_, count)| count.to_string().parse::<u32>().unwrap())
+            .collect();
         let cards = s.chars().map(|f| Card::from_char(&f)).collect();
 
-        if h.len() == 1 {
+        if counts.len() == 1 {
             Hand::FiveKind(cards)
-        } else if h.len() == 5 {
+        } else if counts.len() == 5 {
             Hand::HighCard(cards)
-        } else if h.len() == 4 {
+        } else if counts.len() == 4 {
             Hand::OnePair(cards)
-        } else if h.len() == 3 {
-            if h.iter().any(|f| f.1 == &3) {
+        } else if counts.len() == 3 {
+            if counts.iter().any(|f| f == &3) {
                 Hand::ThreeKind(cards)
             } else {
                 Hand::TwoPair(cards)
             }
         } else {
-            if h.iter().any(|f| f.1 == &1) {
+            if counts.iter().any(|f| f == &1) {
                 Hand::FourKind(cards)
             } else {
                 Hand::FullHouse(cards)
@@ -108,12 +135,24 @@ fn process_part_one(hh: &str) -> usize {
         .map(|(r, (_, bid))| (r + 1) * bid)
         .sum()
 }
+fn process_part_two(hh: &str) -> usize {
+    let handset = HandSet::from_str(hh.replace("J", "W").as_str());
+    handset
+        .hands
+        .iter()
+        .enumerate()
+        .map(|(r, (_, bid))| (r + 1) * bid)
+        .sum()
+}
 
 fn main() {
     println!("Hello, world!");
     let input = include_str!("../input.txt");
     let r = process_part_one(input);
     println!("Part one = {r}");
+
+    let r = process_part_two(input);
+    println!("Part two = {r}")
 }
 
 #[cfg(test)]
@@ -137,5 +176,11 @@ mod tests {
         let hh = include_str!("../test.txt");
         let r = process_part_one(hh);
         assert_eq!(r, 6440)
+    }
+    #[test]
+    fn part_two() {
+        let hh = include_str!("../test.txt");
+        let r = process_part_two(hh);
+        assert_eq!(r, 5905)
     }
 }
