@@ -104,14 +104,19 @@ impl Network {
             .filter(|c| c.0.ends_with('A'))
             .map(|h| h.0.to_string())
             .collect::<Vec<String>>();
+        let mut is_all_zzz = false;
+        let mut end_nodes: Vec<&str> = Vec::new();
+
+        while is_all_zzz {}
+
         for start in start_vec {
             let mut new_start = start.clone();
-            for n in ins.iter().cycle() {
+            for (i, n) in ins.iter().cycle().enumerate() {
                 count += 1;
                 let next = self.0.get(&new_start).unwrap();
                 new_start = next.get(n).unwrap();
                 if new_start.trim().ends_with('Z') {
-                    println!("Start: {start} | End: {new_start}");
+                    println!("Start: {start} | End: {new_start} | Steps at {i}");
                     break;
                 }
             }
@@ -123,8 +128,8 @@ impl Network {
 fn main() {
     println!("Hello, world!");
     let i = include_str!("../input.txt");
-    let n = Network::from_str(i).travel("AAA".to_string(), "ZZZ".to_string());
-    println!("Part one: {n}");
+    // let n = Network::from_str(i).travel("AAA".to_string(), "ZZZ".to_string());
+    // println!("Part one: {n}");
     let n = Network::from_str(i).ghost_travel();
     println!("Part two: {n}")
 }
@@ -143,6 +148,12 @@ mod tests {
     fn pt1_2() {
         let i = include_str!("../test2.txt");
         let n = Network::from_str(i).travel("AAA".to_string(), "ZZZ".to_string());
+        assert_eq!(n, 6)
+    }
+    #[test]
+    fn pt2_1() {
+        let i = include_str!("../test3.txt");
+        let n = Network::from_str(i).ghost_travel();
         assert_eq!(n, 6)
     }
 }
