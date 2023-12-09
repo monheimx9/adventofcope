@@ -4,6 +4,8 @@ use std::{
     usize,
 };
 
+use num::integer::lcm;
+
 #[derive(PartialEq, Eq, PartialOrd, Ord, Hash)]
 enum Direction {
     Left(Option<String>),
@@ -106,41 +108,43 @@ impl Network {
             .collect::<Vec<String>>();
         let mut end_nodes = start_vec.clone();
 
-        while true {
-            count += 1;
-            for dir in ins.iter().cycle() {
-                for mut node in &end_nodes {
-                    count += 1;
-                    let next = self.0.get(node).unwrap().clone();
-                    node = &next.get(dir).unwrap();
-                }
-                if end_nodes.iter().all(|f| f.ends_with('Z')) {
+        // 'outer: while true {
+        //     for dir in ins.iter().cycle() {
+        //         count += 1;
+        //         for n in 0..end_nodes.len() {
+        //             let next = self.0.get(&end_nodes[n]).unwrap();
+        //             end_nodes[n] = next.get(dir).unwrap().clone();
+        //         }
+        //         if end_nodes.iter().all(|f| f.ends_with('Z')) {
+        //             break 'outer;
+        //         }
+        //     }
+        // }
+
+        let mut step_vec: Vec<usize> = Vec::new();
+        for start in start_vec {
+            let mut new_start = start.clone();
+            for (i, n) in ins.iter().cycle().enumerate() {
+                count += 1;
+                let next = self.0.get(&new_start).unwrap();
+                new_start = next.get(n).unwrap();
+                if new_start.trim().ends_with('Z') {
+                    step_vec.push(i + 1);
+                    println!("Start: {start} | End: {new_start} | Steps at {i}");
                     break;
                 }
             }
         }
-
-        // for start in start_vec {
-        //     let mut new_start = start.clone();
-        //     for (i, n) in ins.iter().cycle().enumerate() {
-        //         count += 1;
-        //         let next = self.0.get(&new_start).unwrap();
-        //         new_start = next.get(n).unwrap();
-        //         if new_start.trim().ends_with('Z') {
-        //             println!("Start: {start} | End: {new_start} | Steps at {i}");
-        //             break;
-        //         }
-        //     }
-        // }
-        count
+        step_vec.iter().fold(1, |acc, &x| lcm(acc, x))
+        // count
     }
 }
 
 fn main() {
     println!("Hello, world!");
     let i = include_str!("../input.txt");
-    // let n = Network::from_str(i).travel("AAA".to_string(), "ZZZ".to_string());
-    // println!("Part one: {n}");
+    let n = Network::from_str(i).travel("AAA".to_string(), "ZZZ".to_string());
+    println!("Part one: {n}");
     let n = Network::from_str(i).ghost_travel();
     println!("Part two: {n}")
 }
@@ -163,7 +167,7 @@ mod tests {
     }
     #[test]
     fn pt2_1() {
-        let i = include_str!("../test3.txt");
+        let i = include_str!("../test2.txt");
         let n = Network::from_str(i).ghost_travel();
         assert_eq!(n, 6)
     }
