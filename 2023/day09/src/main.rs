@@ -43,7 +43,7 @@ impl History {
     fn find_first(&self) -> i64 {
         let mut v: Vec<Vec<Option<i64>>> = Vec::new();
         let mut index: usize = 0;
-        let first = self.0[self.0.len() - 1].unwrap();
+        let first = self.0[0].unwrap();
         v.push(self.0.clone());
         let mut new: Vec<Option<i64>> = self.0.clone();
 
@@ -56,13 +56,20 @@ impl History {
                 index += 1;
             }
         }
-        let mut remainder: Vec<i64> = Vec::new();
-        for item in v.iter().skip(1) {
-            remainder.push(item[0].unwrap())
+        let mut next: i64 = 0;
+        let mut curr: i64 = 0;
+        for n in (0..v.len()).rev() {
+            if n == v.len() - 1 {
+                v[n].insert(0, Some(0));
+            } else {
+                next = v[n + 1][0].unwrap();
+                curr = v[n][0].unwrap() - next;
+                v[n].insert(0, Some(curr));
+            }
         }
-        let last: i64 = remainder.iter().sum();
-        first + last
+        v[0][0].unwrap()
     }
+
     fn get_diff(vals: &[Option<i64>]) -> Vec<Option<i64>> {
         vals.windows(2)
             .map(|a| Some(a[1].unwrap() - a[0].unwrap()))
@@ -81,6 +88,14 @@ impl Report {
             .collect();
         res.iter().sum()
     }
+    fn from_str_last(s: &str) -> i64 {
+        let ss: Vec<&str> = s.lines().collect();
+        let res: Vec<i64> = ss
+            .iter()
+            .map(|f| History::from_str(f).find_first())
+            .collect();
+        res.iter().sum()
+    }
 }
 
 fn main() {
@@ -88,6 +103,8 @@ fn main() {
     let i = include_str!("../input.txt");
     let h = Report::from_str(i);
     println!("Part one = {h}");
+    let h = Report::from_str_last(i);
+    println!("Part two = {h}");
 }
 
 #[cfg(test)]
@@ -166,7 +183,7 @@ mod tests {
     #[test]
     fn pt2_1() {
         let i = "10 13 16 21 30 45";
-        let h = History::from_str(i).find_last();
+        let h = History::from_str(i).find_first();
         assert_eq!(h, 5)
     }
 }
