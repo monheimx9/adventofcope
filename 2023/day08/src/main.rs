@@ -130,7 +130,8 @@ impl Network {
                 new_start = next.get(n).unwrap();
                 if new_start.trim().ends_with('Z') {
                     step_vec.push(i + 1);
-                    println!("Start: {start} | End: {new_start} | Steps at {i}");
+                    let a = i + 1;
+                    println!("Start: {start} | End: {new_start} | Steps at {a}");
                     break;
                 }
             }
