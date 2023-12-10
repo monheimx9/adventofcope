@@ -33,7 +33,7 @@ impl PipeType {
             _ => panic!("Invalid pipe"),
         }
     }
-    fn to_char(&self) -> char {
+    fn as_char(&self) -> char {
         match self {
             Self::Verti => '║',
             Self::Hori => '═',
@@ -135,7 +135,7 @@ impl BigMap {
         loop {
             let pipe = g.get_mut(y, x).unwrap();
             if steps != 0 && matches!(pipe, PipeType::Start) {
-                *pipe = PipeType::Path(pipe.to_char());
+                *pipe = PipeType::Path(pipe.as_char());
                 break;
             }
             d = pipe.next_pipe(&d);
@@ -143,7 +143,7 @@ impl BigMap {
             y = (nexty + y as isize) as usize;
             x = (nextx + x as isize) as usize;
             if steps != 0 {
-                *pipe = PipeType::Path(pipe.to_char());
+                *pipe = PipeType::Path(pipe.as_char());
             }
             steps += 1;
         }
@@ -163,11 +163,7 @@ impl BigMap {
                         _ => panic!("not a valid tile"),
                     };
                     odd += i;
-                    if odd % 2 == 0 {
-                        inbound = false;
-                    } else {
-                        inbound = true;
-                    }
+                    inbound = odd % 2 != 0;
                     continue;
                 }
                 if inbound {
@@ -189,7 +185,7 @@ impl BigMap {
 fn print_grid(g: &Grid<PipeType>) {
     let mut f = File::create("./result.txt").unwrap();
     for n in 0..g.rows() {
-        let line = g.iter_row(n).map(PipeType::to_char).collect::<String>();
+        let line = g.iter_row(n).map(PipeType::as_char).collect::<String>();
         writeln!(f, "{}", line).unwrap();
     }
 }
