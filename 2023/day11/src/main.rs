@@ -65,19 +65,15 @@ impl Universe {
     fn expand(&mut self, expansion: Option<usize>) -> &mut Self {
         for n in (0..self.0.rows()).rev() {
             if self.0.iter_row(n).all(|s| matches!(s, Space::Void)) {
-                if expansion.is_some() {
-                    for e in 0..expansion.unwrap() {
-                        self.0.insert_row(n, vec![Space::Void; self.0.cols()]);
-                    }
+                if let Some(e) = expansion {
+                    (0..e).for_each(|_| self.0.insert_row(n, vec![Space::Void; self.0.cols()]));
                 }
             }
         }
         for n in (0..self.0.cols()).rev() {
             if self.0.iter_col(n).all(|s| matches!(s, Space::Void)) {
-                if expansion.is_some() {
-                    for e in 0..expansion.unwrap() {
-                        self.0.insert_col(n, vec![Space::Void; self.0.rows()]);
-                    }
+                if let Some(e) = expansion {
+                    (0..e).for_each(|_| self.0.insert_col(n, vec![Space::Void; self.0.rows()]));
                 }
             }
         }
@@ -98,8 +94,8 @@ impl Universe {
             let (_, y, x) = gal_index[n];
             for galaxy in gal_index.iter().skip(n + 1) {
                 let (_, y2, x2) = galaxy;
-                steps += (*y2 as isize - y as isize).abs() as usize
-                    + (*x2 as isize - x as isize).abs() as usize;
+                steps += (*y2 as isize - y as isize).unsigned_abs()
+                    + (*x2 as isize - x as isize).unsigned_abs();
             }
         }
         steps
