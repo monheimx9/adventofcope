@@ -138,17 +138,32 @@ mod tests {
 
     #[test]
     fn pt1_1() {
-        let s = include_str!("../text.txt");
+        let s = include_str!("../test.txt");
         let u = Universe::from_str(s).expand(Some(1)).find_nearest();
         assert_eq!(u, 374);
     }
     #[test]
     fn pt2_1() {
-        let s = include_str!("../text.txt");
+        let s = include_str!("../test.txt");
         let mut u = Universe::from_str(s);
         let a = u.expand(None).find_nearest();
         let b = u.expand(Some(9)).find_nearest();
         let ans = not_fib_but_you_get_it(1, b, b - a);
         assert_eq!(ans, 8410)
+    }
+    #[test]
+    fn pt1() {
+        let s = include_str!("../input.txt");
+        let u = Universe::from_str(s).expand(Some(1)).find_nearest();
+        assert_eq!(u, 9274989)
+    }
+    #[test]
+    fn pt2() {
+        let s = include_str!("../input.txt");
+        let mut u = Universe::from_str(s);
+        let a = u.expand(None).find_nearest();
+        let b = u.expand(Some(9)).find_nearest();
+        let ans = not_fib_but_you_get_it(5, b, b - a);
+        assert_eq!(ans, 357134560737)
     }
 }
