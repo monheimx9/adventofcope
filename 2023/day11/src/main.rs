@@ -116,7 +116,7 @@ fn print_grid(g: &Grid<Space>) {
 fn main() {
     println!("Hello, world!");
     let s = include_str!("../input.txt");
-    let u = Universe::from_str(s).expand(Some(2)).find_nearest();
+    let u = Universe::from_str(s).expand(Some(1)).find_nearest();
     println!("Part one {u}");
     let mut u = Universe::from_str(s);
     let a = u.expand(None).find_nearest();
