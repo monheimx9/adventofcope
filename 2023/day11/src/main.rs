@@ -50,7 +50,7 @@ impl Universe {
                         }
                         sp
                     })
-                    .collect::<Vec<Space>>() // Collect the inner iterator into Vec<Space>
+                    .collect::<Vec<Space>>()
             })
             .collect();
         let mut gr: Grid<Space> = Grid::new(g.len(), g[0].len());
