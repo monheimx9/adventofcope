@@ -21,8 +21,8 @@ struct HotSpring {
 impl HotSpring {
     fn from_str(s: &str) -> Self {
         let (spring, report) = s.split_once(' ').unwrap();
-        let spring = spring.chars().map(Condition::from_char).collect();
-        let report = report
+        let mut spring = spring.chars().map(Condition::from_char).collect();
+        let mut report = report
             .split(',')
             .map(|c| c.parse::<u8>().unwrap())
             .collect();
