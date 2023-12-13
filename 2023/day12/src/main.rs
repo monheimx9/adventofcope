@@ -174,6 +174,8 @@ fn main() {
         .iter()
         .map(|f| HotSpring::from_str(f).calc().ans())
         .sum::<usize>();
+    let o = i.elapsed().as_micros();
+    println!("Part one completed in {o} micro-seconds");
     assert_eq!(h, 7221);
     let h = s
         .into_iter()
@@ -181,7 +183,7 @@ fn main() {
         .sum::<usize>();
     assert_eq!(h, 7139671893722);
     let o = i.elapsed().as_micros();
-    println!("Total duration: {o}")
+    println!("Total duration: {o} micro-seconds")
 }
 
 #[cfg(test)]
