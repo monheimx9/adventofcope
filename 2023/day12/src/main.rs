@@ -16,15 +16,37 @@ impl Condition {
             _ => unreachable!("Invalid Condition Char"),
         }
     }
+    fn as_char(&self) -> char {
+        match self {
+            Self::Functional => '.',
+            Self::Damaged => '#',
+            Self::Unknown => '?',
+        }
+    }
+}
+#[derive(PartialEq, Eq, PartialOrd, Ord, Hash)]
+struct Spring(Vec<Condition>);
+impl Spring {
+    fn as_str(&self) -> String {
+        self.0.iter().map(Condition::as_char).collect::<String>()
+    }
 }
 
 #[derive(PartialEq, Eq, PartialOrd, Ord, Hash)]
-struct Spring(Vec<Condition>);
+struct Report(Vec<u8>);
+impl Report {
+    fn as_str(&self) -> String {
+        self.0
+            .iter()
+            .map(|f| format!("{},", f.to_string()))
+            .collect::<String>()
+    }
+}
 
 #[derive(PartialEq, Eq, PartialOrd, Ord)]
 struct HotSpring {
     spring: Spring,
-    report: Vec<u8>,
+    report: Report,
     arrangements: Option<usize>,
 }
 impl HotSpring {
@@ -37,21 +59,27 @@ impl HotSpring {
             .collect();
         HotSpring {
             spring: Spring(spring),
-            report,
+            report: Report(report),
             arrangements: None,
         }
     }
     fn calc(&mut self) -> &mut Self {
         let mut v: HashMap<Spring, bool> = HashMap::new();
-        le_recursion(&mut v, &self.spring, &self.report, self.report.len() as u8);
+        le_recursion(
+            &mut v,
+            &self.spring,
+            &self.report,
+            self.report.0.len() as u8,
+        );
 
         fn le_recursion(
             memo: &mut HashMap<Spring, bool>,
             s: &Spring,
-            r: &[u8],
+            r: &Report,
             n: u8,
         ) -> HashMap<Spring, bool> {
-            move_window();
+            let pr = format!("{} - {}", s.as_str(), r.as_str());
+            println!("{pr}");
             todo!()
         }
 
