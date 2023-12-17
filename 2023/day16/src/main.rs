@@ -209,7 +209,7 @@ impl BeamGrid {
         }
         let mut memo: HashSet<(usize, usize, Direction)> = HashSet::new();
         nav(&mut self.0, d, (r, c), &mut memo);
-        print_grid(&self.0);
+        // print_grid(&self.0);
         self
     }
     fn calc_activated(&self) -> usize {
@@ -267,7 +267,7 @@ fn run() {
         .activate_beam(0, 0, Direction::East)
         .calc_activated();
     println!("Part one: {}", ans);
-    println!("Executed in: {} micros", ins.elapsed().as_micros());
+    println!("Executed in: {} millis", ins.elapsed().as_millis());
     let ins = Instant::now();
     let bg = BeamGrid::from_str(s);
     let (r, c) = bg.0.size();
@@ -295,7 +295,7 @@ fn run() {
         );
     }
     println!("Part two: {}", ans.iter().max().unwrap());
-    println!("Executed in: {} micros", ins.elapsed().as_micros());
+    println!("Executed in: {} millis", ins.elapsed().as_millis());
 }
 
 fn main() {
