@@ -38,7 +38,9 @@ fn solve_1(nodes: &mut [Node], src: &mut usize, dst: usize) -> usize {
         let current_node = nodes[*src];
         for n in 0..nodes.len() {
             if is_x_valid(&current_node, &nodes[n]) {
-                todo!()
+                if is_at_limit(nodes, n) {
+                    todo!()
+                }
             }
             if is_y_valid(&current_node, &nodes[n]) {
                 todo!()
@@ -54,12 +56,17 @@ fn is_at_limit(nodes: &[Node], src: usize) -> bool {
     let mut count: usize = 0;
     let mut new_src: usize = src;
     let (mut x, mut y): (usize, usize) = (0, 0);
-    loop {
-        (x, y) = (nodes[new_src].x, nodes[new_src].y);
-        if count == 3 {
-            return true;
+    let mut xy: Vec<(usize, usize)> = Vec::new();
+    for n in 0..3 {
+        xy.push((nodes[new_src].x, nodes[new_src].y));
+        if let Some(x) = nodes[new_src].previous {
+            new_src = x;
+        } else {
+            return false;
         }
     }
+    false
+    //test case, iter
 }
 
 fn is_x_valid(src: &Node, dst: &Node) -> bool {
