@@ -36,14 +36,38 @@ fn solve_1(nodes: &mut [Node], src: &mut usize, dst: usize) -> usize {
     let mut queue: Vec<(usize, &Node)> = Vec::new();
     while queue.len() < nodes.len() {
         let current_node = nodes[*src];
-        for n in 0..nodes.len() {}
+        for n in 0..nodes.len() {
+            if is_x_valid(&current_node, &nodes[n]) {
+                todo!()
+            }
+            if is_y_valid(&current_node, &nodes[n]) {
+                todo!()
+            }
+        }
 
         todo!()
     }
     todo!()
 }
 
-fn is_x_valid(src: &Node, dst: &Node) {}
+fn is_at_limit(nodes: &[Node], src: usize) -> bool {
+    let mut count: usize = 0;
+    let mut new_src: usize = src;
+    let (mut x, mut y): (usize, usize) = (0, 0);
+    loop {
+        (x, y) = (nodes[new_src].x, nodes[new_src].y);
+        if count == 3 {
+            return true;
+        }
+    }
+}
+
+fn is_x_valid(src: &Node, dst: &Node) -> bool {
+    dst.x.abs_diff(src.x) == 1 && dst.y == src.y
+}
+fn is_y_valid(src: &Node, dst: &Node) -> bool {
+    dst.y.abs_diff(src.y) == 1 && dst.x == src.x
+}
 
 fn main() {
     println!("Hello, world!");
