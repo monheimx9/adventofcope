@@ -36,11 +36,14 @@ fn solve_1(nodes: &mut [Node], src: &mut usize, dst: usize) -> usize {
     let mut queue: Vec<(usize, &Node)> = Vec::new();
     while queue.len() < nodes.len() {
         let current_node = nodes[*src];
+        for n in 0..nodes.len() {}
 
         todo!()
     }
     todo!()
 }
+
+fn is_x_valid(src: &Node, dst: &Node) {}
 
 fn main() {
     println!("Hello, world!");
