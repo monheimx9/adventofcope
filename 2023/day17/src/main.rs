@@ -31,35 +31,41 @@ impl Node {
 fn solve_1(nodes: &mut [Node], src: usize, dst: usize) -> usize {
     let mut queue: Vec<(usize, Node)> = Vec::new();
     let mut next_src = src;
-    while queue.len() < nodes.len() {
-        let mut temp_nodes: Vec<(usize, usize)> = Vec::new();
-        let previous = src;
-        let current_node = nodes[next_src];
-        let mut count: usize = 0;
-        for n in 0..nodes.len() {
-            if is_x_valid(&current_node, &nodes[n]) {
-                if !is_at_limit(nodes, n) {
-                    let loss = node_loss(&current_node, &nodes[n]);
-                    temp_nodes.push((n, loss));
-                    count += 1;
+    nodes[src].previous = Some(src);
+    for o in (0..nodes.len()).cycle() {
+        if let Some(x) = nodes[o].previous {
+            let mut temp_nodes: Vec<(usize, usize)> = Vec::new();
+            let previous = x;
+            let current_node = nodes[o];
+            let mut count: usize = 0;
+            for n in 0..nodes.len() {
+                if is_x_valid(&current_node, &nodes[n]) {
+                    if !is_at_limit(nodes, n) {
+                        let loss = node_loss(&current_node, &nodes[n]);
+                        temp_nodes.push((n, loss));
+                        count += 1;
+                    }
+                }
+                if is_y_valid(&current_node, &nodes[n]) {
+                    if !is_at_limit(nodes, n) {
+                        let loss = node_loss(&current_node, &nodes[n]);
+                        temp_nodes.push((n, loss));
+                        count += 1;
+                    }
+                }
+                if count == 4 {
+                    break;
                 }
             }
-            if is_y_valid(&current_node, &nodes[n]) {
-                if !is_at_limit(nodes, n) {
-                    let loss = node_loss(&current_node, &nodes[n]);
-                    temp_nodes.push((n, loss));
-                    count += 1;
-                }
-            }
-            if count == 4 {
-                break;
-            }
+            let (next_node, loss) = temp_nodes.iter().min_by_key(|(_, value)| value).unwrap();
+            nodes[*next_node].total_loss = Some(*loss);
+            nodes[next_src].previous = Some(previous);
+            queue.push((next_src, nodes[next_src]));
+            next_src = *next_node;
         }
-        let (next_node, loss) = temp_nodes.iter().min_by_key(|(_, value)| value).unwrap();
-        nodes[*next_node].total_loss = Some(*loss);
-        nodes[next_src].previous = Some(previous);
-        queue.push((next_src, nodes[next_src]));
-        next_src = *next_node;
+        if queue.len() >= nodes.len() {
+            break;
+        }
     }
     nodes[dst].total_loss.unwrap()
 }
