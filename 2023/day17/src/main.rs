@@ -7,6 +7,7 @@ struct Node {
     x: usize,
     y: usize,
     previous: Option<usize>,
+    done: bool,
 }
 impl Node {
     fn from_str(s: &str) -> Vec<Self> {
@@ -22,6 +23,7 @@ impl Node {
                         x,
                         y,
                         previous: None,
+                        done: false,
                     })
                     .collect::<Vec<Node>>()
             })
@@ -30,38 +32,28 @@ impl Node {
 }
 fn solve_1(nodes: &mut [Node], src: usize, dst: usize) -> usize {
     let mut queue: Vec<(usize, Node)> = Vec::new();
-    let mut next_src = src;
     nodes[src].previous = Some(src);
     for o in (0..nodes.len()).cycle() {
-        if let Some(x) = nodes[o].previous {
-            let mut temp_nodes: Vec<(usize, usize)> = Vec::new();
-            let previous = x;
-            let current_node = nodes[o];
-            let mut count: usize = 0;
-            for n in 0..nodes.len() {
-                if is_x_valid(&current_node, &nodes[n]) {
-                    if !is_at_limit(nodes, n) {
-                        let loss = node_loss(&current_node, &nodes[n]);
-                        temp_nodes.push((n, loss));
-                        count += 1;
+        if !nodes[o].done {
+            if let Some(_x) = nodes[o].previous {
+                let current_node = nodes[o];
+                for n in 0..nodes.len() {
+                    if o != n && nodes[o].previous != Some(n) {
+                        if is_x_valid(&current_node, &nodes[n]) {
+                            if !is_at_limit(nodes, n) {
+                                set_node(o, &current_node, &mut nodes[n]);
+                            }
+                        }
+                        if is_y_valid(&current_node, &nodes[n]) {
+                            if !is_at_limit(nodes, n) {
+                                set_node(o, &current_node, &mut nodes[n]);
+                            }
+                        }
                     }
                 }
-                if is_y_valid(&current_node, &nodes[n]) {
-                    if !is_at_limit(nodes, n) {
-                        let loss = node_loss(&current_node, &nodes[n]);
-                        temp_nodes.push((n, loss));
-                        count += 1;
-                    }
-                }
-                if count == 4 {
-                    break;
-                }
+                nodes[o].done = true;
+                queue.push((o, nodes[o]));
             }
-            let (next_node, loss) = temp_nodes.iter().min_by_key(|(_, value)| value).unwrap();
-            nodes[*next_node].total_loss = Some(*loss);
-            nodes[next_src].previous = Some(previous);
-            queue.push((next_src, nodes[next_src]));
-            next_src = *next_node;
         }
         if queue.len() >= nodes.len() {
             break;
@@ -69,19 +61,24 @@ fn solve_1(nodes: &mut [Node], src: usize, dst: usize) -> usize {
     }
     nodes[dst].total_loss.unwrap()
 }
-fn node_loss(src: &Node, dst: &Node) -> usize {
-    src.total_loss.unwrap_or(0) + dst.loss
+fn set_node(n: usize, src: &Node, dst: &mut Node) {
+    if dst.total_loss.is_none() {
+        dst.total_loss = Some(src.total_loss.unwrap_or(0) + dst.loss);
+        dst.previous = Some(n);
+    } else if dst.total_loss.unwrap() > src.total_loss.unwrap_or(0) + dst.loss {
+        dst.total_loss = Some(src.total_loss.unwrap_or(0) + dst.loss);
+        dst.previous = Some(n);
+    };
 }
 
 fn is_at_limit(nodes: &[Node], src: usize) -> bool {
-    let mut count: usize = 0;
     let mut new_src: usize = src;
     let (x, y): (usize, usize) = (nodes[src].x, nodes[src].y);
     let mut xy: Vec<(usize, usize)> = Vec::new();
-    for n in 0..3 {
+    for _ in 0..4 {
         xy.push((nodes[new_src].x, nodes[new_src].y));
-        if let Some(x) = nodes[new_src].previous {
-            new_src = x;
+        if let Some(p) = nodes[new_src].previous {
+            new_src = p;
         } else {
             return false;
         }
@@ -111,8 +108,16 @@ mod tests {
     use super::*;
 
     #[test]
-    fn pt1() {
+    fn pt1_1() {
         let s = include_str!("../test.txt");
+        let mut nodes = Node::from_str(s);
+        let dst = nodes.len() - 1;
+        let ans = solve_1(&mut nodes, 0, dst);
+        assert_eq!(ans, 102)
+    }
+    #[test]
+    fn pt1_2() {
+        let s = include_str!("../input.txt");
         let mut nodes = Node::from_str(s);
         let dst = nodes.len() - 1;
         let ans = solve_1(&mut nodes, 0, dst);
