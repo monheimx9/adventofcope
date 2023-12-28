@@ -55,7 +55,6 @@ impl Mountain {
                         if m.cluster[i - n] != m.cluster[i + n] {
                             is_broken = true;
 
-                            find_hori(m, index + 1);
                             break;
                         }
                     }
@@ -95,7 +94,6 @@ impl Mountain {
 
                             if a != b {
                                 is_broken = true;
-                                find_verti(m, index + 1);
                                 break;
                             }
                         }
