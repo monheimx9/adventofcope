@@ -34,7 +34,6 @@ impl Mountain {
                 return 0;
             }
             let mut is_broken: bool = false;
-            let index: usize = p;
             if let Some(i) = m
                 .cluster
                 .windows(2)
@@ -71,7 +70,6 @@ impl Mountain {
                 return 0;
             }
             let mut is_broken = false;
-            let index: usize = p;
             for n in 0..m.cluster[0].len() - 1 {
                 let a = collect_column(&m.cluster, n);
                 let b = collect_column(&m.cluster, n + 1);
