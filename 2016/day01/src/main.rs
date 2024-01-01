@@ -1,4 +1,4 @@
-use std::{char, i64};
+use std::collections::HashSet;
 
 #[derive(Debug)]
 struct Instruction {
@@ -31,8 +31,63 @@ impl Instruction {
         }
         x_tot.abs() + y_tot.abs()
     }
+    fn first_double_visit(first: Cardinal, ins: &[Instruction]) -> i64 {
+        let (mut x, mut y) = (0, 0);
+        let mut double: HashSet<(i64, i64)> = HashSet::new();
+        let mut x_tot: i64 = 0;
+        let mut y_tot: i64 = 0;
+        let mut curr_dir = first;
+        for i in ins {
+            (curr_dir, x, y) = i.dir.walk(curr_dir, i.case);
+
+            x_tot += x;
+            y_tot += y;
+            if double.contains(&(x_tot, y_tot)) {
+                return x_tot.abs() + y_tot.abs();
+            }
+            double.insert((x_tot, y_tot));
+        }
+        if double.contains(&(x_tot, y_tot)) {
+            return x_tot.abs() + y_tot.abs();
+        }
+        return 0;
+    }
 }
 
+fn walk_x(d: &mut HashSet<(i64, i64)>, x_tot: i64, x: i64, y_tot: i64) -> (bool, i64) {
+    let mut x_t: i64 = x_tot;
+    if x > 0 {
+        for n in 1..=x.abs() {
+            if d.contains(&(x_t + (n * -1), y_tot)) {
+                let x2 = x_t + (n * -1);
+                return (true, x2.abs() + y_tot.abs());
+            }
+            x_t += x_t + (n * -1);
+            d.insert((x_t, y_tot));
+        }
+    };
+    if d.contains(&(x_t, y_tot)) {
+        return (true, x_t.abs() + y_tot.abs());
+    };
+    (false, x_t.abs() + y_tot.abs())
+}
+fn walk_y(d: &mut HashSet<(i64, i64)>, y_tot: i64, y: i64, x_tot: i64) -> (bool, i64) {
+    let mut x_t: i64 = y_tot;
+    if x > 0 {
+        for n in 1..=x.abs() {
+            if d.contains(&(x_t + (n * -1), y_tot)) {
+                let x2 = x_t + (n * -1);
+                return (true, x2.abs() + y_tot.abs());
+            }
+            x_t += x_t + (n * -1);
+            d.insert((x_t, y_tot));
+        }
+    };
+    if d.contains(&(x_t, y_tot)) {
+        return (true, x_t.abs() + y_tot.abs());
+    };
+    (false, x_t.abs() + y_tot.abs())
+}
 enum Cardinal {
     North,
     South,
@@ -82,6 +137,9 @@ fn main() {
     let d = Instruction::from_str(s);
     let ans = Instruction::total(Cardinal::North, &d);
     println!("Part One = {ans}");
+
+    let ans = Instruction::first_double_visit(Cardinal::North, &d);
+    println!("Part Two = {ans}")
 }
 
 #[cfg(test)]
@@ -108,5 +166,12 @@ mod tests {
         let d = Instruction::from_str(s);
         let ans = Instruction::total(Cardinal::North, &d);
         assert_eq!(ans, 2)
+    }
+    #[test]
+    fn pt2_1() {
+        let s = "R8, R4, R4, R8";
+        let d = Instruction::from_str(s);
+        let ans = Instruction::first_double_visit(Cardinal::North, &d);
+        assert_eq!(ans, 4)
     }
 }
