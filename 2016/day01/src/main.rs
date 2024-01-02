@@ -15,9 +15,6 @@ impl Instruction {
             })
             .collect()
     }
-    fn case_num(&self) -> i64 {
-        self.case
-    }
     fn total(first: Cardinal, ins: &[Instruction]) -> i64 {
         let (mut x, mut y) = (0, 0);
         let mut x_tot: i64 = 0;
@@ -37,18 +34,20 @@ impl Instruction {
         let mut x_tot: i64 = 0;
         let mut y_tot: i64 = 0;
         let mut curr_dir = first;
+        let mut is_visited = false;
+        let mut ans: i64 = 0;
         for i in ins {
             (curr_dir, x, y) = i.dir.walk(curr_dir, i.case);
-
+            if x != 0 {
+                (is_visited, ans) = walk_x(&mut double, x_tot, x, y_tot);
+            } else {
+                (is_visited, ans) = walk_y(&mut double, y_tot, y, x_tot);
+            }
+            if is_visited {
+                return ans;
+            }
             x_tot += x;
             y_tot += y;
-            if double.contains(&(x_tot, y_tot)) {
-                return x_tot.abs() + y_tot.abs();
-            }
-            double.insert((x_tot, y_tot));
-        }
-        if double.contains(&(x_tot, y_tot)) {
-            return x_tot.abs() + y_tot.abs();
         }
         return 0;
     }
@@ -56,37 +55,51 @@ impl Instruction {
 
 fn walk_x(d: &mut HashSet<(i64, i64)>, x_tot: i64, x: i64, y_tot: i64) -> (bool, i64) {
     let mut x_t: i64 = x_tot;
-    if x > 0 {
+    if x < 0 {
         for n in 1..=x.abs() {
-            if d.contains(&(x_t + (n * -1), y_tot)) {
-                let x2 = x_t + (n * -1);
-                return (true, x2.abs() + y_tot.abs());
+            x_t += -1;
+            if d.contains(&(x_t, y_tot)) {
+                return (true, x_t.abs() + y_tot.abs());
             }
-            x_t += x_t + (n * -1);
+            d.insert((x_t, y_tot));
+        }
+    } else {
+        for n in 1..=x.abs() {
+            x_t += 1;
+            if d.contains(&(x_t, y_tot)) {
+                return (true, x_t.abs() + y_tot.abs());
+            }
             d.insert((x_t, y_tot));
         }
     };
-    if d.contains(&(x_t, y_tot)) {
-        return (true, x_t.abs() + y_tot.abs());
-    };
+    // if d.contains(&(x_t, y_tot)) {
+    //     return (true, x_t.abs() + y_tot.abs());
+    // };
     (false, x_t.abs() + y_tot.abs())
 }
 fn walk_y(d: &mut HashSet<(i64, i64)>, y_tot: i64, y: i64, x_tot: i64) -> (bool, i64) {
-    let mut x_t: i64 = y_tot;
-    if x > 0 {
-        for n in 1..=x.abs() {
-            if d.contains(&(x_t + (n * -1), y_tot)) {
-                let x2 = x_t + (n * -1);
-                return (true, x2.abs() + y_tot.abs());
+    let mut y_t: i64 = y_tot;
+    if y < 0 {
+        for n in 1..=y.abs() {
+            y_t += -1;
+            if d.contains(&(x_tot, y_t)) {
+                return (true, y_t.abs() + x_tot.abs());
             }
-            x_t += x_t + (n * -1);
-            d.insert((x_t, y_tot));
+            d.insert((x_tot, y_t));
+        }
+    } else {
+        for n in 1..=y.abs() {
+            y_t += 1;
+            if d.contains(&(x_tot, y_t)) {
+                return (true, y_t.abs() + x_tot.abs());
+            }
+            d.insert((x_tot, y_t));
         }
     };
-    if d.contains(&(x_t, y_tot)) {
-        return (true, x_t.abs() + y_tot.abs());
-    };
-    (false, x_t.abs() + y_tot.abs())
+    // if d.contains(&(x_tot, y_t)) {
+    //     return (true, y_t.abs() + x_tot.abs());
+    // };
+    (false, y_t.abs() + x_tot.abs())
 }
 enum Cardinal {
     North,
@@ -113,18 +126,18 @@ impl Direction {
         match dir {
             Cardinal::North => match self {
                 Self::Right => (Cardinal::East, case, 0),
-                Self::Left => (Cardinal::West, case * -1, 0),
+                Self::Left => (Cardinal::West, -case, 0),
             },
             Cardinal::South => match self {
-                Self::Right => (Cardinal::West, case * -1, 0),
+                Self::Right => (Cardinal::West, -case, 0),
                 Self::Left => (Cardinal::East, case, 0),
             },
             Cardinal::West => match self {
                 Self::Right => (Cardinal::North, 0, case),
-                Self::Left => (Cardinal::South, 0, case * -1),
+                Self::Left => (Cardinal::South, 0, -case),
             },
             Cardinal::East => match self {
-                Self::Right => (Cardinal::South, 0, case * -1),
+                Self::Right => (Cardinal::South, 0, -case),
                 Self::Left => (Cardinal::North, 0, case),
             },
         }
