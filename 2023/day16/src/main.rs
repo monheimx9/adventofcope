@@ -209,7 +209,7 @@ impl BeamGrid {
         }
         let mut memo: HashSet<(usize, usize, Direction)> = HashSet::new();
         nav(&mut self.0, d, (r, c), &mut memo);
-        // print_grid(&self.0);
+        print_grid(&self.0);
         self
     }
     fn calc_activated(&self) -> usize {
